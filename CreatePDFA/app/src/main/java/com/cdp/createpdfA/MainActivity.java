@@ -28,7 +28,10 @@ import java.io.IOException;
 public class MainActivity extends AppCompatActivity {
     //second configuration
     //jajaj
+    //Tercera configuracion
     Button button;
+    //mas modificacion
+
     Bitmap bmp, scaledBitmap;
 
     @Override
