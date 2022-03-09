@@ -35,6 +35,8 @@ public class MainActivity extends AppCompatActivity {
     Bitmap bmp, scaledBitmap;
 //ahora andamos al tiro
     //si se;or yo soy de rancho
+
+    //hallo wie gehts
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
