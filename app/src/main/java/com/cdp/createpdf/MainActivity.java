@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     int pageHeight = 600;
     Date dateObj;
     DateFormat dateFormat;
-
+    //ahora modifico desde la huawei
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
