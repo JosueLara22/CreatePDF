@@ -1,9 +1,5 @@
 package com.cdp.createpdf;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -11,22 +7,22 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.pdf.PdfDocument;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.print.PrintAttributes;
-import android.print.pdf.PrintedPdfDocument;
-import android.renderscript.ScriptGroup;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -35,31 +31,58 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.Chart;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.LegendEntry;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.DataSet;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.formatter.PercentFormatter;
+
+
+
 // ultimas añadidas
-import android.widget.PopupWindow;
 
 public class MainActivity extends AppCompatActivity {
 
     Button button;
     Bitmap bmp, scaledBitmap;
-    int pageWidth = 400;
-    int pageHeight = 600;
+    int pageWidth = 612;
+    int pageHeight = 792;
+    int margin = 20;
     Date dateObj;
     DateFormat dateFormat;
-    //ahora modifico desde la huawei
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         button = findViewById(R.id.button);
-        //ahora andamos del otro lado jaja
         ActivityCompat.requestPermissions(this,new String[]{
                 Manifest.permission.WRITE_EXTERNAL_STORAGE}, PackageManager.PERMISSION_GRANTED);
 
 
         createPDF(this);
+        PieChart mPieChart;
+        BarChart mBarChart;
+        String[] mMonths =new String []{"E","F","Mr","A","My","Jn","Jl","A","S","O","N","D"};
+        float[] msale =new float[]{12,10,(float) 9.1,3,6,12,5,(float)10.68,11,15,14, (float) 11.8};
+        int[] mColors =new int[]{Color.GREEN,Color.GRAY,Color.GREEN,Color.GRAY,Color.GREEN,
+                Color.GRAY,Color.GREEN,Color.GRAY,Color.GREEN,Color.GRAY,Color.GREEN,Color.GRAY};
+        mBarChart =(BarChart)findViewById(R.id.barChart);
+        mPieChart =(PieChart) findViewById(R.id.pieChart);
+        //createdCharts();
+        GraphingUtils.setBarGraphic(mBarChart, msale, mMonths, Color.GREEN, "Series",
+                    Color.BLACK, Color.WHITE, 3000, "LABEL");
+
     }
     private void createPDF(Context context){
         button.setOnClickListener(new View.OnClickListener() {
@@ -76,100 +99,125 @@ public class MainActivity extends AppCompatActivity {
                 Paint myPaint = new Paint();
                 Paint titlePaint = new Paint();
                 myPaint.setColor(getResources().getColor(R.color.purple_200));
+                /*RelativeLayout relativeLayout = findViewById(R.layout.activity_main);
+                */
+                /*FrameLayout view = findViewById(R.layout.activity_main);
+                view.setDrawingCacheEnabled(true);
+                view.buildDrawingCache();
+                Bitmap bm = view.getDrawingCache();*/
+                RelativeLayout relativeLayout = findViewById(R.id.rlayout);
+                //Bitmap bm = Bitmap.createBitmap(relativeLayout.getWidth(),relativeLayout.getHeight(),Bitmap.Config.ARGB_8888);
+                Bitmap bitmap = getBitmapFromView(findViewById(R.id.rlayout));
+                //view.draw(canvas);
+                /*Canvas canvas2 = new Canvas(bitmap);
+                relativeLayout.draw(canvas2);*/
+
 
 
                 PdfDocument.PageInfo myPageInfo1 = new PdfDocument.PageInfo.Builder(612, 792, 1).create();
                 PdfDocument.Page myPage1 = myPdfDocument.startPage(myPageInfo1);
                 Canvas canvas = myPage1.getCanvas();
+                Bitmap bmp, scaledBitmap;
+                //bmp = BitmapFactory.decodeResource(getResources(),R.drawable.logo);
+                scaledBitmap = Bitmap.createScaledBitmap(bitmap,pageWidth,pageWidth,false);
+                //myPaint.setTextAlign(Paint.Align.CENTER);
+                canvas.drawBitmap(scaledBitmap,0,90,myPaint);
+                //canvas.drawBitmap(bitmap,0,0,myPaint);
 
                 titlePaint.setTextAlign(Paint.Align.CENTER);
                 titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
-                titlePaint.setTextSize(40);
+                titlePaint.setTextSize(50);//25 por cada letra 27 por numeros con 50. 50 por cada letra y 55 por cada numero
                 titlePaint.setColor(Color.BLACK);
-                canvas.drawText("Keeui Solar report", pageWidth/2, 40, titlePaint);
+                canvas.drawText("Keeui Solar report", pageWidth/2, 50, titlePaint);//titulo
 
                 myPaint.setColor(Color.BLACK);
-                myPaint.setTextSize(20f);
+                myPaint.setTextSize(10);
                 myPaint.setTextAlign(Paint.Align.RIGHT);
-                canvas.drawText("Call: +55 921-267-03-27", 400, 65, myPaint);
-                canvas.drawText("921-345-78-23", 400, 85, myPaint);
+                canvas.drawText("Call: +55 921-267-03-27", pageWidth-margin, 75, myPaint);
+                canvas.drawText("921-345-78-23", pageWidth-margin, 85, myPaint);
 
-                titlePaint.setTextAlign(Paint.Align.CENTER);
                 titlePaint.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.ITALIC));
-                titlePaint.setTextSize(30);
-                canvas.drawText("System metrics", pageWidth/2, 115, titlePaint);
+                titlePaint.setTextSize(25);
+                canvas.drawText("System metrics", pageWidth/2, 110, titlePaint);
 
                 myPaint.setTextAlign(Paint.Align.LEFT);
                 myPaint.setTextSize(10);
                 myPaint.setColor(Color.BLACK);
-                canvas.drawText("Customer Name: Patricio Tognola ",20, 140, myPaint);
-                canvas.drawText("Contact No. 9212670327", pageWidth-110, 140, myPaint);
+                canvas.drawText("Customer Name: Patricio Tognola ",margin, 140, myPaint);
+                canvas.drawText("Contact No. 9212670327", margin, 150, myPaint);
+                canvas.drawText("Report No. "+"92783992", margin,160, myPaint);
 
                 myPaint.setTextAlign(Paint.Align.RIGHT);
-                canvas.drawText("Report No. "+"92783992", pageWidth-10,150, myPaint);
 
                 dateFormat = new SimpleDateFormat("dd/MM/yy");
-                canvas.drawText("Date: "+dateFormat.format(dateObj),pageWidth-20,160, myPaint);
+                canvas.drawText("Date: "+dateFormat.format(dateObj),pageWidth-margin,140, myPaint);
 
                 dateFormat = new SimpleDateFormat("HH,mm,ss");
-                canvas.drawText("Time: "+dateFormat.format(dateObj),pageWidth-20,170, myPaint);
+                canvas.drawText("Time: "+dateFormat.format(dateObj),pageWidth-margin,150, myPaint);
 
                 myPaint.setStyle(Paint.Style.STROKE);
                 myPaint.setStrokeWidth(2);
-                canvas.drawRect(20,pageHeight-10,pageWidth-20,180, myPaint);
+                canvas.drawRect(margin,pageHeight-margin,pageWidth-margin,180, myPaint);
 
-                //bmp = BitmapFactory.decodeResource(getResources().getDrawable(R.drawable.logo));
+
 
                 myPaint.setTextAlign(Paint.Align.LEFT);
                 myPaint.setStyle(Paint.Style.FILL);
-                canvas.drawText("Item",50,200, myPaint);
-                canvas.drawText("Description",100, 200, myPaint);
-                canvas.drawText("Price", 250,200, myPaint);
-                canvas.drawText("Qty",300,200, myPaint);
-                canvas.drawText("Total",400,200, myPaint);
+                canvas.drawText("Item",30,200, myPaint);
+                canvas.drawText("Description",80, 200, myPaint);
+                canvas.drawText("Price", 352,200, myPaint);
+                canvas.drawText("Qty",452,200, myPaint);
+                canvas.drawText("Total",502,200, myPaint);
 
-                canvas.drawLine(90,190,90,250, myPaint);
-                canvas.drawLine(290,190,290,250, myPaint);
-                canvas.drawLine(340,190,340,250, myPaint);
-                canvas.drawLine(440,190,440,250, myPaint);
+                canvas.drawLine(70,180,70,270, myPaint);
+                canvas.drawLine(pageWidth-margin-250,180,pageWidth-margin-250,270, myPaint);
+                canvas.drawLine(pageWidth-margin-150,180,pageWidth-margin-150,270, myPaint);
+                canvas.drawLine(pageWidth-margin-100,180,pageWidth-margin-100,270, myPaint);
 
-                canvas.drawText("1.",50,220, myPaint);
-                canvas.drawText("Mono_Canadian Solar_CS3U...",100,220, myPaint);
-                canvas.drawText("53.28",300,220, myPaint);
-                canvas.drawText("6",350,220, myPaint);
-                canvas.drawText("319.68",450,220, myPaint );
+                canvas.drawText("1.",30,220, myPaint);
+                canvas.drawText("Mono_Canadian Solar_CS3U...",80,220, myPaint);
+                canvas.drawText("53.28",352,220, myPaint);
+                canvas.drawText("6",452,220, myPaint);
+                myPaint.setTextAlign(Paint.Align.RIGHT);
+                canvas.drawText("319.68",pageWidth-(2*margin),220, myPaint );
+                myPaint.setTextAlign(Paint.Align.LEFT);
 
-                //canvas.drawText("2.",40,1050, myPaint);
-                //canvas.drawText("FRONIUS GALVO 1.5-1...",200,1050, myPaint);
-                //canvas.drawText("1112.99",700,1050, myPaint);
-                //canvas.drawText("1",900,1050, myPaint);
-                //canvas.drawText("1,112.99",1050,1050, myPaint );
+                canvas.drawText("2.",30,235, myPaint);
+                canvas.drawText("FRONIUS GALVO 1.5-1...",80,235, myPaint);
+                canvas.drawText("1112.99",352,235, myPaint);
+                canvas.drawText("1",452,235, myPaint);
+                myPaint.setTextAlign(Paint.Align.RIGHT);
+                canvas.drawText("1,112.99",pageWidth-(2*margin),235, myPaint );
+                myPaint.setTextAlign(Paint.Align.LEFT);
 
-                //canvas.drawText("3.",40,1150, myPaint);
-                //canvas.drawText("6V Deep-Cycle Trojan...",200,1150, myPaint);
-                //canvas.drawText("21.488",700,1150, myPaint);
-                //canvas.drawText("12",900,1150, myPaint);
-                //canvas.drawText("257.856",1050,1150, myPaint );
+                canvas.drawText("3.",30,250, myPaint);
+                canvas.drawText("6V Deep-Cycle Trojan...",80,250, myPaint);
+                canvas.drawText("21.488",352,250, myPaint);
+                canvas.drawText("12",452,250, myPaint);
+                myPaint.setTextAlign(Paint.Align.RIGHT);
+                canvas.drawText("257.856",pageWidth-(2*margin),250, myPaint );
+                myPaint.setTextAlign(Paint.Align.LEFT);
 
-                //canvas.drawLine(680,1200, pageWidth-20,1200, myPaint);
-                //canvas.drawText("Sub total",700,1250, myPaint);
+
+                canvas.drawLine(margin,270, pageWidth-margin,270, myPaint);
+                canvas.drawText("Sub total:",452,285, myPaint);
                 //canvas.drawText(":",900,1300, myPaint);
-                //myPaint.setTextAlign(Paint.Align.RIGHT);
-                //canvas.drawText("1,690.526",pageWidth-40,1250, myPaint);
+                myPaint.setTextAlign(Paint.Align.RIGHT);
+                canvas.drawText("1,690.526",pageWidth-(2*margin),285, myPaint);
 
-                //myPaint.setTextAlign(Paint.Align.LEFT);
-                //canvas.drawText("Tax (12%)",700, 1300, myPaint);
+                myPaint.setTextAlign(Paint.Align.LEFT);
+                canvas.drawText("Tax (12%)",452, 300, myPaint);
                 //canvas.drawText(":",900,1300, myPaint);
-                //myPaint.setTextAlign(Paint.Align.RIGHT);
-                //canvas.drawText("202.86",pageWidth-40,1300, myPaint);
-                //myPaint.setTextAlign(Paint.Align.LEFT);
+                myPaint.setTextAlign(Paint.Align.RIGHT);
+                canvas.drawText("202.86",pageWidth-(2*margin),300, myPaint);
+                myPaint.setTextAlign(Paint.Align.LEFT);
 
-                //myPaint.setColor(Color.BLACK);
-                //myPaint.setTextSize(50f);
-                //myPaint.setTextAlign(Paint.Align.LEFT);
-                //canvas.drawText("Total",700,1415, myPaint);
-                //myPaint.setTextAlign(Paint.Align.RIGHT);
-                //canvas.drawText("1,893.39",pageWidth-40,1415, myPaint);
+                myPaint.setColor(Color.BLACK);
+                myPaint.setTextSize(15);
+                myPaint.setTextAlign(Paint.Align.LEFT);
+                canvas.drawText("Total",452,320, myPaint);
+                myPaint.setTextAlign(Paint.Align.RIGHT);
+                canvas.drawText("1,893.39",pageWidth-(2*margin),320, myPaint);
 
 
 
@@ -178,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
                 //canvas.save();
                 myPdfDocument.finishPage(myPage1);
 
-                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+"/PrimerPDF3.pdf");
+                File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+"/ReporteKeeeUISolar.pdf");
 
                 try {
                     myPdfDocument.writeTo(new FileOutputStream(file));
@@ -191,5 +239,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private Bitmap getBitmapFromView(View view){
+        Bitmap returnedBitmap = Bitmap.createBitmap(view.getWidth(),view.getHeight(),Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(returnedBitmap);
+        view.draw(canvas);
+        return returnedBitmap;
     }
 }
