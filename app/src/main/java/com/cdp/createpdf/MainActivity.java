@@ -4,19 +4,16 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.graphics.pdf.PdfDocument;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -32,22 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Legend;
-import com.github.mikephil.charting.components.LegendEntry;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.data.DataSet;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
-import com.github.mikephil.charting.formatter.PercentFormatter;
-
 
 
 // ultimas añadidas
@@ -89,30 +71,13 @@ public class MainActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
-/*                PrintAttributes builder = new PrintAttributes.Builder().build();
-                PrintedPdfDocument document = new PrintedPdfDocument(context, builder);
-                PdfDocument.Page page = document.startPage(0);
-                View content = R.layout.pdf_report.getContentView();*/
-
                 dateObj = new Date();
                 PdfDocument myPdfDocument = new PdfDocument();
                 Paint myPaint = new Paint();
                 Paint titlePaint = new Paint();
                 myPaint.setColor(getResources().getColor(R.color.purple_200));
-                /*RelativeLayout relativeLayout = findViewById(R.layout.activity_main);
-                */
-                /*FrameLayout view = findViewById(R.layout.activity_main);
-                view.setDrawingCacheEnabled(true);
-                view.buildDrawingCache();
-                Bitmap bm = view.getDrawingCache();*/
-                RelativeLayout relativeLayout = findViewById(R.id.rlayout);
-                //Bitmap bm = Bitmap.createBitmap(relativeLayout.getWidth(),relativeLayout.getHeight(),Bitmap.Config.ARGB_8888);
-                Bitmap bitmap = getBitmapFromView(findViewById(R.id.rlayout));
-                //view.draw(canvas);
-                /*Canvas canvas2 = new Canvas(bitmap);
-                relativeLayout.draw(canvas2);*/
-
-
+                RelativeLayout reportLayoutRL = findViewById(R.id.reportLayout);
+                Bitmap bitmap = getBitmapFromView(reportLayoutRL);
 
                 PdfDocument.PageInfo myPageInfo1 = new PdfDocument.PageInfo.Builder(612, 792, 1).create();
                 PdfDocument.Page myPage1 = myPdfDocument.startPage(myPageInfo1);
