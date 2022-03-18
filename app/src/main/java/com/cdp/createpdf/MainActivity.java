@@ -12,6 +12,7 @@ import android.graphics.pdf.PdfDocument;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -76,8 +77,20 @@ public class MainActivity extends AppCompatActivity {
                 Paint myPaint = new Paint();
                 Paint titlePaint = new Paint();
                 myPaint.setColor(getResources().getColor(R.color.purple_200));
+
+                //inflar layout y convertirlo en view **
+                //seguir buscando como convertir layouts a images
+
+                setContentView(R.layout.pdf_report);
                 RelativeLayout reportLayoutRL = findViewById(R.id.reportLayout);
-                Bitmap bitmap = getBitmapFromView(reportLayoutRL);
+                LayoutInflater inflater = null;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                    inflater = (LayoutInflater)
+                            getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                }
+                View repLay = inflater.inflate(R.layout.pdf_report, null);
+                Bitmap bitmap = getBitmapFromView(repLay);
+
 
                 PdfDocument.PageInfo myPageInfo1 = new PdfDocument.PageInfo.Builder(612, 792, 1).create();
                 PdfDocument.Page myPage1 = myPdfDocument.startPage(myPageInfo1);
