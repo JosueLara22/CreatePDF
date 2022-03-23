@@ -2,6 +2,7 @@ package com.cdp.createpdf;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
     private void createPDF(Context context){
+        Intent intent = new Intent(this, pdf_report.class);
         button.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
@@ -81,21 +83,30 @@ public class MainActivity extends AppCompatActivity {
                 //inflar layout y convertirlo en view **
                 //seguir buscando como convertir layouts a images
 
-                setContentView(R.layout.pdf_report);
-                RelativeLayout reportLayoutRL = findViewById(R.id.reportLayout);
+
+
+
+                PdfDocument.PageInfo myPageInfo1 = new PdfDocument.PageInfo.Builder(612, 792, 1).create();
+                PdfDocument.Page page = myPdfDocument.startPage(myPageInfo1);
+                Canvas canvas = page.getCanvas();
+
+                //agregado del codigo pasado
                 LayoutInflater inflater = null;
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                     inflater = (LayoutInflater)
                             getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 }
-                View repLay = inflater.inflate(R.layout.pdf_report, null);
-                Bitmap bitmap = getBitmapFromView(repLay);
+                View content = inflater.inflate(R.layout.pdf_report, null);
+
+                int measureWidth = View.MeasureSpec.makeMeasureSpec(page.getCanvas().getWidth(), View.MeasureSpec.EXACTLY);
+                int measuredHeight = View.MeasureSpec.makeMeasureSpec(page.getCanvas().getHeight(), View.MeasureSpec.EXACTLY);
+
+                content.measure(measureWidth, measuredHeight);
+                content.layout(0, 0, page.getCanvas().getWidth(), page.getCanvas().getHeight());
+                content.draw(page.getCanvas());
 
 
-                PdfDocument.PageInfo myPageInfo1 = new PdfDocument.PageInfo.Builder(612, 792, 1).create();
-                PdfDocument.Page myPage1 = myPdfDocument.startPage(myPageInfo1);
-                Canvas canvas = myPage1.getCanvas();
-                Bitmap bmp, scaledBitmap;
+                /*Bitmap bmp, scaledBitmap;
                 //bmp = BitmapFactory.decodeResource(getResources(),R.drawable.logo);
                 scaledBitmap = Bitmap.createScaledBitmap(bitmap,pageWidth,pageWidth,false);
                 //myPaint.setTextAlign(Paint.Align.CENTER);
@@ -202,7 +213,9 @@ public class MainActivity extends AppCompatActivity {
 
 
                 //canvas.save();
-                myPdfDocument.finishPage(myPage1);
+
+                 */
+                myPdfDocument.finishPage(page);
 
                 File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)+"/ReporteKeeeUISolar.pdf");
 
